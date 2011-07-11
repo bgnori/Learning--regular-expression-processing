@@ -53,8 +53,8 @@ class REParser:
   def match(self):
     pass
 
-  def nextToken(self):
-    self.lookahead = self.tk.getToken()
+  def next_token(self):
+    self.lookahead = self.tk.get_token()
     return self.lookahead
   
   def parse(self, s):
