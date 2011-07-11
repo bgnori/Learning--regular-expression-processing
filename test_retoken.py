@@ -18,14 +18,14 @@ class TestSpecialTokenCase(unittest.TestCase):
     self.assertEqual(o.name, 'or')
 
   def test_name2(self):
-    m = Mul('*')
-    self.assertEqual(m.name, 'Mul')
+    m = ZOM('*')
+    self.assertEqual(m.name, 'ZeroOrMore')
 
   def test_raw(self):
     o = Or('|')
     self.assertEqual(o.raw, '|')
     
-    m = Mul('*')
+    m = ZOM('*')
     self.assertEqual(m.raw, '*')
 
     L = LP('(')
@@ -40,7 +40,7 @@ class TestSpecialTokenCase(unittest.TestCase):
     self.assertEqual(e.raw, '\\a')
     self.assertEqual(e.value, 'a')
 
-  def test_eof(self):
+  def test_EOF(self):
     e = EOF('')
     self.assertEqual(e.raw, '')
     

@@ -40,7 +40,7 @@ class SingletonToken(Token): #Ugh!
 Or = SingletonToken.make(name='or', raw='|')
 LP = SingletonToken.make(name='LP', raw='(')
 RP = SingletonToken.make(name='RP', raw=')')
-Mul = SingletonToken.make(name='Mul', raw='*')
+ZOM = SingletonToken.make(name='ZeroOrMore', raw='*')
 EOF = SingletonToken.make(name='EOF', raw='')
 
 
@@ -77,13 +77,13 @@ class Tokenizer:
   def get_token(self):
     c = self.readahead
     if c == '':
-      return self.handle_eof(c)
+      return self.handle_EOF(c)
     elif c == '\\':
       return self.handle_escape(c)
     elif c == '|':
       return self.handle_or(c)
     elif c == '*':
-      return self.handle_mul(c)
+      return self.handle_ZOM(c)
     elif c == '(':
       return self.handle_LP(c)
     elif c == ')':
@@ -94,7 +94,7 @@ class Tokenizer:
     assert False
 
     
-  def handle_eof(self, a):
+  def handle_EOF(self, a):
     self.match_char('')
     return EOF(a)
     
@@ -114,9 +114,9 @@ class Tokenizer:
     self.match_char(a)
     return Or(a)
 
-  def handle_mul(self, a):
+  def handle_ZOM(self, a):
     self.match_char(a)
-    return Mul(a)
+    return ZOM(a)
 
   def handle_escape(self, a):
     b = self.peek_char()
@@ -134,7 +134,7 @@ class Tokenizer:
   
   def peek_char(self):
     c = self.buf.read(1)
-    if c != '': #eof.
+    if c != '': #EOF.
      self.buf.seek(-1, 1)
     return c
 
