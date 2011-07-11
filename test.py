@@ -1,9 +1,14 @@
 import unittest
+
+from retoken import *
 from thompson import REParser, RPNStringEmitter
+
+
+
 
 class TestParseCase(unittest.TestCase):
   def setUp(self):
-    self.parser = REParser(RPNStringEmitter)
+    self.parser = REParser(RPNStringEmitter())
     
   def test_Empty(self):
     self.assertEqual(self.parser.parse(''), '')

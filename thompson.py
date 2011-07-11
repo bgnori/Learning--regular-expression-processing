@@ -1,6 +1,6 @@
-import StringIO
 
 
+from retoken import *
 
 '''
 #parse
@@ -21,55 +21,6 @@ import StringIO
 'a*|b'
 '\|a'
 '''
-class Token:
-  pass
-
-class Alpha(Token):
-  pass
-
-class Or(Token):
-  pass
-
-class RP(Token):
-  pass
-
-class LP(Token):
-  pass
-
-class Mul(Token):
-  pass
-
-class Escapsed(Token):
-  pass
-
-class EOF(Token):
-  pass
-
-
-
-class Tokenizer:
-  def __init__(self):
-    self.buf = None
-
-  def feed(self, x):
-    self.buf = StringIO.StringIO(x)
-    
-  def handle_alf(self, a):
-    pass
-  def handle_RP(self, ):
-    pass
-  def handle_LP(self, ):
-    pass
-  def handle_or(self):
-    pass
-  def handle_cat(self):
-    pass
-  def handle_escape(self):
-    pass
-  def match(self, x):
-    pass
-  def peek(self):
-    pass
 
 
 class REParser:
@@ -117,6 +68,9 @@ class REParser:
 
 class Emitter:
   def reset(self):
+    pass
+
+  def result(self):
     pass
 
   def empty(self):
@@ -173,7 +127,7 @@ class Emitter:
 
 class RPNStringEmitter(Emitter):
   def __init__(self):
-    self.result = ''
+    self._result = ''
 
   def empty(self):
     return ''
