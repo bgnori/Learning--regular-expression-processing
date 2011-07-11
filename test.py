@@ -34,10 +34,13 @@ class TestParseCase(unittest.TestCase):
     self.assertEqual(self.parser.parse('((a))'), 'a')
 
   def test_a_cat_a_or_b(self):
-    self.assertEqual(self.parser.parse('aa|b'), 'aab|+')
+    self.assertEqual(self.parser.parse('aa|b'), 'aa+b|')
 
   def test_LP_aa_RP_or_b(self):
     self.assertEqual(self.parser.parse('(aa)|b'), 'aa+b|')
+
+  def test_a_LP_a_or_b_RP(self):
+    self.assertEqual(self.parser.parse('a(a|b)'), 'aab|+')
 
   def test_amutli_or_b(self):
     self.assertEqual(self.parser.parse('a*|b'), 'a*b|')
@@ -47,5 +50,11 @@ class TestParseCase(unittest.TestCase):
 
   def test_escapse2(self):
     self.assertEqual(self.parser.parse('\|a'), '\|a+')
+
+  def test_a_or_bmutli(self):
+    self.assertEqual(self.parser.parse('a|b*'), 'ab*|')
+
+  def test_LP_a_or_b_RP_mutli(self):
+    self.assertEqual(self.parser.parse('(a|b)*'), 'ab|*')
 
 

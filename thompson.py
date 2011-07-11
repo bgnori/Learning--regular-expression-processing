@@ -62,10 +62,15 @@ class REParser:
     '''
     print 'expr', self.lookahead
     self.choice()
-    while self.lookahead.name == 'or':
+    self.morechoice()
+
+  def morechoice(self):
+    print 'morechoice', self.lookahead
+    if self.lookahead.name == 'or':
       self.match_token(self.lookahead)
       self.choice()
       self.emitter.Or(self.lookahead)
+      self.morechoice() #ugh! risk of stack over flow
 
   def choice(self):
     '''
@@ -74,10 +79,17 @@ class REParser:
     '''
     print 'choice', self.lookahead
     self.seq()
-    t = self.lookahead
-    while self.lookahead:
-      self.seq()
-      self.emitter.Cat(self.lookahead)
+    self.moreseq()
+
+  def moreseq(self):
+    print 'moreseq', self.lookahead
+    if self.lookahead:
+      if self.lookahead.name in ('LP', 'Token', 'Escaped'):
+        # == term
+        self.seq()
+        self.emitter.Cat(self.lookahead)
+    else:
+      pass
 
   def seq(self):
     ''' seq -> term ZeroOrMore | term '''
@@ -95,9 +107,7 @@ class REParser:
     if t.name == 'LP':
       self.LP()
       self.expr()
-      # self.RP()
-    elif t.name == 'RP':
-      self.RP() # ???
+      self.RP()
     elif t.name == 'Token' or t.name == 'Escaped':
       self.letter()
     else:
@@ -223,9 +233,9 @@ class RPNStringEmitter(Emitter):
 
   def Or(self, t):
     self._result.append('|')
-    
 
   def Cat(self, t):
+    print 'Cat'
     self._result.append('+')
 
   def ZOM(self, Ns):
