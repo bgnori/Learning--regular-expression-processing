@@ -4,6 +4,7 @@ import StringIO
 class Token(object):
   def __init__(self, raw):
     self.raw = raw
+    self.name = 'Token'
 
   def __str__(self):
     return self.raw
@@ -12,9 +13,10 @@ class Token(object):
     return bool(self.raw)
 
 
-class Escapsed(Token):
+class Escaped(Token):
   def __init__(self, value):
-    super(Escapsed, self.__class__).__init__(self, '\\'+value)
+    super(Escaped, self.__class__).__init__(self, '\\'+value)
+    self.name = 'Escaped'
     self.value = value
 
 
@@ -74,6 +76,9 @@ class Tokenizer:
     self.buf = StringIO.StringIO(x)
     self.read_char()
 
+  def unget_token(self, t):
+    self.buf.seek(-len(t.raw), 1)
+    
   def get_token(self):
     c = self.readahead
     if c == '':
@@ -93,6 +98,10 @@ class Tokenizer:
       return self.handle_default(c)
     assert False
 
+  def peek_token(self):
+    t = self.get_token()
+    self.unget_token(t)
+    return t
     
   def handle_EOF(self, a):
     self.match_char('')
@@ -122,10 +131,7 @@ class Tokenizer:
     b = self.peek_char()
     self.match_char(a)
     self.match_char(b)
-    return Escapsed(b)
-
-  def matchToken(self, token):
-    pass
+    return Escaped(b)
 
   def read_char(self):
     c = self.buf.read(1)

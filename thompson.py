@@ -21,47 +21,136 @@ from retoken import *
 'a*|b'
 '\|a'
 '''
+from exceptions import Exception
 
+class ParserError(Exception):
+  pass
 
 class REParser:
   '''
-    R -> exp
-    exp -> term | term Or term | term Cat term | term Mul
-    term -> ( exp ) | letter
+    R -> expr eof | Empty
+    expr -> choice morechoice  
+    morechoice -> Or choice morechoice | Empty
+    choice -> seq | moreseq
+    moreseq -> seq moreseq | Empty
+    seq -> term ZeroOrMore | term
+    term -> ( expr ) | letter
     letter -> alpha | escaped
 
   '''
   def __init__(self, emitter):
-    self.tk = Tokenizer()
+    self.tokenizer = Tokenizer()
     self.emitter = emitter
 
   def reset(self):
     self.emitter.reset()
     self.buf = None
-    
-    pass
+
+  def error(self, msg):
+    print self.emitter.result()
+    raise ParserError(msg)
+
 
   def feed(self, s):
-    self.tk.feed(s)
+    self.tokenizer.feed(s)
+
 
   def expr(self):
-    pass
+    ''' 
+      expr -> choice morechoice
+      morechoice -> Or choice morechoice | Empty
+    '''
+    print 'expr', self.lookahead
+    self.choice()
+    while self.lookahead.name == 'or':
+      self.match_token(self.lookahead)
+      self.choice()
+      self.emitter.Or(self.lookahead)
+
+  def choice(self):
+    '''
+      choice -> seq | morese
+      moreseq -> seq moreseq | Empty
+    '''
+    print 'choice', self.lookahead
+    self.seq()
+    t = self.lookahead
+    while self.lookahead:
+      self.seq()
+      self.emitter.Cat(self.lookahead)
+
+  def seq(self):
+    ''' seq -> term ZeroOrMore | term '''
+    print 'seq', self.lookahead
+    self.term()
+    t = self.lookahead
+    if t.name == 'ZeroOrMore':
+      self.match_token(t)
+      self.emitter.ZOM(t)
 
   def term(self):
-    pass
+    ''' term -> ( expr ) | letter '''
+    print 'term', self.lookahead
+    t = self.lookahead
+    if t.name == 'LP':
+      self.LP()
+      self.expr()
+      # self.RP()
+    elif t.name == 'RP':
+      self.RP() # ???
+    elif t.name == 'Token' or t.name == 'Escaped':
+      self.letter()
+    else:
+      self.error('bad term around %s, name = %s'%(repr(t), t.name))
 
-  def match(self):
-    pass
+  def letter(self):
+    print 'letter', self.lookahead
+    t = self.lookahead
+    if t.name == 'Token':
+      self.alpha()
+    elif t.name == 'Escaped':
+      self.escaped()
+    else:
+      self.error('bad token %s, name=%s'%(t, t.name))
+
+  def alpha(self):
+    t = self.lookahead
+    self.emitter.alpha(t)
+    self.match_token(t)
+
+  def escaped(self):
+    t = self.lookahead
+    self.emitter.alpha(t)
+    self.match_token(t)
+
+  def LP(self):
+    print 'LP'
+    t = self.lookahead
+    self.match_token(t)
+    self.emitter.LP(t)
+
+  def RP(self):
+    print 'RP'
+    t = self.lookahead
+    self.match_token(t)
+    self.emitter.RP(t)
+
+
+  def match_token(self, t):
+    assert self.lookahead == t
+    print 'consumed', t.raw
+    self.next_token()
 
   def next_token(self):
-    self.lookahead = self.tk.get_token()
+    self.lookahead = self.tokenizer.get_token()
     return self.lookahead
-  
+
   def parse(self, s):
     self.feed(s)
-    while self.nextToken():
-      break
-
+    self.next_token()
+    t = self.lookahead
+    if t:
+      self.expr()
     return self.emitter.result()
     
 
@@ -83,7 +172,7 @@ class Emitter:
     '''
     pass
 
-  def Alpha(self, a):
+  def alpha(self, a):
     ''' rule 2:
       ->[i] -(a)-> [[f]]
       a: str
@@ -91,7 +180,8 @@ class Emitter:
     '''
       
   
-  def op_or(self, Ns, Nt):
+  def Or(self, a):
+
     '''
       s|t -> N(s|t)
       Ns, Nt : NFA
@@ -100,7 +190,7 @@ class Emitter:
     '''
     pass   
 
-  def op_cat(self, Ns, Nt):
+  def Cat(self, a):
     '''
       st -> N(st)
       Ns, Nt : NFA
@@ -108,7 +198,7 @@ class Emitter:
     '''
     pass   
   
-  def op_repeat(self, Ns):
+  def ZOM(self, s):
     '''
       s* -> N(s*)
       Ns : NFA
@@ -116,35 +206,36 @@ class Emitter:
     '''
     pass   
   
-  def string(self, s):
-    '''
-      s -> N(s)
-      s : str
-      result : NFA
-    '''
-    pass   
 
 
 class RPNStringEmitter(Emitter):
   def __init__(self):
-    self._result = ''
+    self._result = []
 
-  def empty(self):
-    return ''
+  def result(self):
+    return ''.join(self._result)
 
-  def alpha(self, a):
-    return a
+  def empty(self, t):
+    self._result.append('')
 
-  def op_or(self, Ns, Nt):
-    return ''.join((Ns, Nt, '|'))
+  def alpha(self, t):
+    self._result.append(t.raw)
 
-  def op_cat(self, Ns, Nt):
-    return ''.join((Ns, Nt, '+'))
+  def Or(self, t):
+    self._result.append('|')
+    
 
-  def op_repeat(self, Ns):
-    return ''.join((Ns, '*'))
+  def Cat(self, t):
+    self._result.append('+')
 
-  def string(self, s):
-    return s
+  def ZOM(self, Ns):
+    self._result.append('*')
+
+
+  def LP(self, t):
+    pass
+
+  def RP(self, t):
+    pass
 
 

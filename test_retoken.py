@@ -36,7 +36,8 @@ class TestSpecialTokenCase(unittest.TestCase):
 
 
   def test_escape(self):
-    e = Escapsed('a')
+    e = Escaped('a')
+    self.assertEqual(e.name, 'Escaped')
     self.assertEqual(e.raw, '\\a')
     self.assertEqual(e.value, 'a')
 
