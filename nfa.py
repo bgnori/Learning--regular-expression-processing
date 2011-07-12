@@ -33,9 +33,7 @@ class Converter:
     stack = list(T)
     result = set(T)
     while stack:
-      print 'stack', stack
       t = stack.pop()
-      print 'node', t
       try:
         nodes = self.states[t]['']
       except:
@@ -43,7 +41,6 @@ class Converter:
 
       for u in nodes:
         if u not in result:
-          print '...', u
           result.add(u)
           stack.append(u)
     return frozenset(result)
@@ -55,10 +52,12 @@ class Converter:
     return None
 
   def move(self, T, a):
+    assert a
     result = set()
-    for s in T:
-      for v in self.states[s].values():
-        result.update(set(v))
+    for s in self.eclosure(T):
+      for e in self.states[s]:
+        if a == e:
+          result.update(set(self.states[s][a]))
     return frozenset(result)
     
   def build(self):
@@ -73,23 +72,31 @@ class Converter:
     while T:
       print 'marking', T
       self.Dstates[T] = True
-      input = {}
+      input = set()
       for s in T:
         for a in self.states[s]:
-          input.update({a:None})
+          input.add(a)
         
       for a in input:
+        if not a:
+          # skip ''
+          continue
         U = self.eclosure(self.move(T, a))
         if U not in self.Dstates:
           self.Dstates.update({U: False})
         t = Dtran.get(T, {})
         t[a] = U
+        Dtran[T] = t
       T = self.get_unmarked_T_in_Dstates()
-    return Dtran 
     
+    for n in Dtran:
+      print n
+      print '...', Dtran[n]
+    return Dtran 
 
 
 
 if __name__ == '__main__':
   import doctest
   doctest.testmod()
+

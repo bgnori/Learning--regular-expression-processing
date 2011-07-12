@@ -32,9 +32,14 @@ class TestNFAConverter(unittest.TestCase):
     expected = frozenset((2,))
     self.assertEqual(self.sim.eclosure(given), expected)
 
-  def test_move(self):
+  def test_move_2_3(self):
     given = frozenset((2,))
     expected = frozenset((3,))
+    self.assertEqual(self.sim.move(given, 'a'), expected)
+
+  def test_move_6_8(self):
+    given = frozenset((6,))
+    expected = frozenset((3, 8,))
     self.assertEqual(self.sim.move(given, 'a'), expected)
     
   def test_build(self):
