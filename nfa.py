@@ -1,7 +1,7 @@
 
 
 
-class Converter:
+class NFA:
   '''
     sample from p142 fig 3.27
     it should accept (a|b)*abb
@@ -18,12 +18,13 @@ class Converter:
               10: {}\
              }
         
-    >>> c = Converter(dg, 0, {10,})
+    >>> c = Converter(dg, 0, frozenset((10,)))
   '''
   
   def __init__(self, dg, initial, accepts):
     self.states = dg
     self.initial = initial
+    self.accepts = accepts
     self.Dstates = {}
 
   def eclosure(self, T):
@@ -60,9 +61,10 @@ class Converter:
           result.update(set(self.states[s][a]))
     return frozenset(result)
     
-  def build(self):
+  def makeDFA(self):
     '''
       from p141
+      subset construction
     '''
     
     self.Dstates = {self.eclosure((self.initial,)): False} #unmarked eclosure(s0)
@@ -95,8 +97,21 @@ class Converter:
     return Dtran 
 
 
+  def feed(self, s):
+    '''
+      from page 150
+    '''
+
+    S = self.eclosure((self.initial,))
+    for a in s:
+      S = self.eclosure(self.move(S), a)
+    return S & self.accepts
+
+
 
 if __name__ == '__main__':
   import doctest
   doctest.testmod()
+
+
 
