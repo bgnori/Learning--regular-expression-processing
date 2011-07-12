@@ -2,9 +2,9 @@
 
 
 import unittest
-from nfa import Simulator
+from nfa import Converter
 
-class TestNFASimulator(unittest.TestCase):
+class TestNFAConverter(unittest.TestCase):
   def setUp(self):
     self.dg = {
           0: {'': [1, 7],},
@@ -20,7 +20,7 @@ class TestNFASimulator(unittest.TestCase):
           10: {}
     }
         
-    self.sim = Simulator(self.dg, 0, frozenset([10]))
+    self.sim = Converter(self.dg, 0, frozenset([10]))
 
   def test_eclosure_0(self):
     given = frozenset((0,))
@@ -31,4 +31,29 @@ class TestNFASimulator(unittest.TestCase):
     given = frozenset((2,))
     expected = frozenset((2,))
     self.assertEqual(self.sim.eclosure(given), expected)
+
+  def test_move(self):
+    given = frozenset((2,))
+    expected = frozenset((3,))
+    self.assertEqual(self.sim.move(given, 'a'), expected)
+    
+  def test_build(self):
+    '''
+      from p143
+    '''
+    A = frozenset([0, 1, 2, 4, 7])
+    B = frozenset([1, 2, 3, 4, 6, 7, 8])
+    C = frozenset([1, 2, 3, 4, 6, 7])
+    D = frozenset([1, 2, 4, 5, 6, 7, 9])
+    E = frozenset([1, 2, 4, 5, 6, 7, 10])
+
+    expected = {
+      A: {'a': B, 'b': C},
+      B: {'a': B, 'b': D},
+      C: {'a': B, 'b': C},
+      D: {'a': B, 'b': E},
+      E: {'a': B, 'b': C},
+    }
+    self.assertEqual(self.sim.build(), expected)
+    
 

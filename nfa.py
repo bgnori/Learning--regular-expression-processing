@@ -1,7 +1,7 @@
 
 
 
-class Simulator:
+class Converter:
   '''
     sample from p142 fig 3.27
     it should accept (a|b)*abb
@@ -18,34 +18,13 @@ class Simulator:
               10: {}\
              }
         
-    >>> s = Simulator(dg, 0, {10,})
-    >>> s.reset()
-    >>> s.feed('abb')
-    True
-
-    >>> s.reset()
-    >>> s.feed('aabb')
-    True
-
-    >>> s.reset()
-    >>> s.feed('babb')
-    True
-
-    >>> s.reset()
-    >>> s.feed('aaabb')
-    True
+    >>> c = Converter(dg, 0, {10,})
   '''
   
   def __init__(self, dg, initial, accepts):
     self.states = dg
     self.initial = initial
-
-  def reset(self):
-    self.current = self.initial
-
-  def handle(self, c):
-    state = self.states[self.current]
-    self.current = state[c]
+    self.Dstates = {}
 
   def eclosure(self, T):
     '''
@@ -67,13 +46,48 @@ class Simulator:
           print '...', u
           result.add(u)
           stack.append(u)
-    return result
+    return frozenset(result)
+
+  def get_unmarked_T_in_Dstates(self):
+    for T in self.Dstates:
+      if not self.Dstates[T]:
+        return T
+    return None
+
+  def move(self, T, a):
+    result = set()
+    for s in T:
+      for v in self.states[s].values():
+        result.update(set(v))
+    return frozenset(result)
+    
+  def build(self):
+    '''
+      from p141
+    '''
+    
+    self.Dstates = {self.eclosure((self.initial,)): False} #unmarked eclosure(s0)
+
+    Dtran = {}
+    T = self.get_unmarked_T_in_Dstates()
+    while T:
+      print 'marking', T
+      self.Dstates[T] = True
+      input = {}
+      for s in T:
+        for a in self.states[s]:
+          input.update({a:None})
+        
+      for a in input:
+        U = self.eclosure(self.move(T, a))
+        if U not in self.Dstates:
+          self.Dstates.update({U: False})
+        t = Dtran.get(T, {})
+        t[a] = U
+      T = self.get_unmarked_T_in_Dstates()
+    return Dtran 
     
 
-
-  def feed(self, s):
-
-    return True
 
 
 if __name__ == '__main__':
