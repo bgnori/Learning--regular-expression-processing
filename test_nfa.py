@@ -48,7 +48,7 @@ class TestNFAConverter(unittest.TestCase):
     '''
     A = frozenset([0, 1, 2, 4, 7])
     B = frozenset([1, 2, 3, 4, 6, 7, 8])
-    C = frozenset([1, 2, 3, 4, 6, 7])
+    C = frozenset([1, 2, 4, 5, 6, 7])
     D = frozenset([1, 2, 4, 5, 6, 7, 9])
     E = frozenset([1, 2, 4, 5, 6, 7, 10])
 
