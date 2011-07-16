@@ -4,7 +4,8 @@
 import unittest
 from nfa import NFA 
 
-class TestNFANFA(unittest.TestCase):
+
+class TestNFA(unittest.TestCase):
   def setUp(self):
     self.dg = {
           0: {'': [1, 7],},
@@ -61,4 +62,51 @@ class TestNFANFA(unittest.TestCase):
     }
     self.assertEqual(self.nfa.makeDFA(), expected)
     
+
+
+class TestNFAComposition(unittest.TestCase):
+  def test_Empty(self):
+    emp = NFA.build_empty()
+    self.assert_(emp.initial)
+    self.assert_(emp.accepts)
+    self.assertEqual(len(emp.states) , 2)
+    self.assertEqual(
+      emp.states[emp.initial],
+      dict({'': emp.accepts})
+    )
+
+  def test_a(self):
+    a = NFA.build_a('a')
+    self.assert_(a.initial)
+    self.assert_(a.accepts)
+    self.assertEqual(len(a.states) , 2)
+    self.assertEqual(
+      a.states[a.initial],
+      dict({'a': a.accepts})
+    )
+
+  def test_or(self):
+    a = NFA.build_a('a')
+    b = NFA.build_a('b')
+    ab = NFA.build_or(a, b)
+
+    self.assert_(ab.initial)
+    self.assert_(ab.accepts)
+
+
+  def test_cat(self):
+    a = NFA.build_a('a')
+    b = NFA.build_a('b')
+    ab = NFA.build_cat(a, b)
+
+    self.assert_(ab.initial)
+    self.assert_(ab.accepts)
+
+
+  def test_zom(self):
+    a = NFA.build_a('a')
+    azom = NFA.build_zom(a)
+  
+    self.assert_(azom.initial)
+    self.assert_(azom.accepts)
 

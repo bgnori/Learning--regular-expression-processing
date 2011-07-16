@@ -7,23 +7,12 @@ class Emitter:
   def result(self):
     pass
 
-  def empty(self):
-    ''' rule 1:
-      ->[i] -(e)-> [[f]]
-      i: initial state
-      f: finish state
-      input: None
-      result: NFA
-    '''
-    pass
-
   def alpha(self, a):
     ''' rule 2:
       ->[i] -(a)-> [[f]]
       a: str
       result: NFA
     '''
-      
   
   def Or(self, a):
 
@@ -59,9 +48,6 @@ class RPNStringEmitter(Emitter):
 
   def result(self):
     return ''.join(self._result)
-
-  def empty(self, t):
-    self._result.append('')
 
   def alpha(self, t):
     self._result.append(t.raw)

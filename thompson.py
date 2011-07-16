@@ -10,9 +10,6 @@ class Thompson(Emitter):
   def result(self):
     return ''.join(self._result)
 
-  def empty(self, t):
-    self._result.append('')
-
   def alpha(self, t):
     self._result.append(t.raw)
 

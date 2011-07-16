@@ -108,10 +108,83 @@ class NFA:
     return S & self.accepts
 
 
+  _node = 0
+  @classmethod
+  def new_node(cls):
+    cls._node += 1
+    return cls._node
 
-if __name__ == '__main__':
-  import doctest
-  doctest.testmod()
+
+  @classmethod
+  def build_empty(cls):
+    ini = cls.new_node()
+    fin = cls.new_node()
+    return NFA({ini: {'': [fin],}, fin:{}}, ini, [fin])
+    
+
+  @classmethod
+  def build_a(cls, a):
+    ini = cls.new_node()
+    fin = cls.new_node()
+    return NFA({ini: {a: [fin],}, fin:{}}, ini, [fin])
+
+
+  @classmethod
+  def build_or(cls, a, b):
+    ini = cls.new_node()
+    fin = cls.new_node()
+    dg = {}
+    assert not ( set(a.states) & set(b.states))
+    dg.update(a.states)
+    dg.update(b.states)
+    dg.update({ini: {"":[a.initial, b.initial]}})
+    for s in a.accepts:
+      assert dg[s] == {}
+      # because Thompson alogorith does not produce NFAs have fins with outgoing edges
+
+      dg[s] = ['', fin]
+
+    for s in b.accepts:
+      assert dg[s] == {}
+      # because Thompson alogorith does not produce NFAs have fins with outgoing edges
+
+      dg[s] = ['', fin]
+
+    return NFA(dg, ini, [fin])
+
+
+  @classmethod
+  def build_cat(cls, a, b):
+    dg = {}
+    assert not ( set(a.states) & set(b.states))
+
+    ini = a.initial 
+    fin = b.accepts
+    dg.update(a.states)
+    dg.update(b.states)
+
+    del dg[b.initial]
+    for j in a.accepts:
+      e = dict()
+      e.update(b.states[b.initial])
+      dg[j] = e
+    return NFA(dg, ini, [fin])
+
+
+  @classmethod
+  def build_zom(cls, a):
+    dg = {}
+    ini = cls.new_node()
+    fin = cls.new_node()
+    dg.update(a.states)
+
+
+    dg[ini] = {'':[a.initial, fin]}
+    for f in a.accepts:
+      assert dg[f] == {}
+      dg[f] = {'': [a.initial, fin]}
+    
+    return NFA(dg, ini, [fin])
 
 
 
