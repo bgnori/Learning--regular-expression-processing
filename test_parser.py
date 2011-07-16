@@ -1,7 +1,8 @@
 import unittest
 
 from retoken import *
-from thompson import REParser, RPNStringEmitter
+from reparser import REParser
+from emit import RPNStringEmitter
 
 
 
