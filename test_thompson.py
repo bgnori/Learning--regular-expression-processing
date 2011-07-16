@@ -12,10 +12,43 @@ class TestThompson(unittest.TestCase):
 
   def test_Empty(self):
     nfa = self.parser.parse('')
-    self.assert_(set(nfa.states[nfa.initial]['']) &set(self.finals))
+    self.assert_(set(nfa.states[nfa.initial]['']) &set(nfa.finals))
 
   def test_a(self):
-    nfa = self.parser.parse('')
-    self.assert_(set(nfa.states[nfa.initial]['a']) & set(self.finals))
+    nfa = self.parser.parse('a')
+    self.assert_(set(nfa.states[nfa.initial]['a']) & set(nfa.finals))
     
+  def test_a_cat_b(self):
+    nfa = self.parser.parse('ab')
+    before_b = nfa.states[nfa.initial]['a']
+    self.assert_(before_b)
+    self.assertEqual(len(before_b), 1)
+    b = before_b[0]
+    print nfa.finals
+    self.assert_(set(nfa.states[b]['b']) & set(nfa.finals))
   
+  def test_a_or_b(self):
+    nfa = self.parser.parse('a|b')
+    for s in  nfa.states[nfa.initial]['']:
+      if 'a' in nfa.states[s]:
+        an = nfa.states[s]['a']
+
+      if 'b' in nfa.states[s]:
+        bn = nfa.states[s]['b']
+
+    ax = set()
+    print nfa.states
+    for x in an:
+      print nfa.states[x]
+      ax |= set(nfa.states[x][''])
+
+    bx = set()
+    for x in bn:
+      bx |= set(nfa.states[x][''])
+
+    self.assert_(set(ax) & set(nfa.finals))
+    self.assert_(set(bx) & set(nfa.finals))
+
+  def test_a_zom(self):
+    nfa = self.parser.parse('a*')
+

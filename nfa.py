@@ -142,13 +142,13 @@ class NFA:
       assert dg[s] == {}
       # because Thompson alogorith does not produce NFAs have fins with outgoing edges
 
-      dg[s] = ['', fin]
+      dg[s] = {'': [fin]}
 
     for s in b.finals:
       assert dg[s] == {}
       # because Thompson alogorith does not produce NFAs have fins with outgoing edges
 
-      dg[s] = ['', fin]
+      dg[s] = {'': [fin]}
 
     return NFA(dg, ini, [fin])
 
@@ -168,7 +168,7 @@ class NFA:
       e = dict()
       e.update(b.states[b.initial])
       dg[j] = e
-    return NFA(dg, ini, [fin])
+    return NFA(dg, ini, fin)
 
 
   @classmethod
