@@ -68,21 +68,21 @@ class TestNFAComposition(unittest.TestCase):
   def test_Empty(self):
     emp = NFA.build_empty()
     self.assert_(emp.initial)
-    self.assert_(emp.accepts)
+    self.assert_(emp.finals)
     self.assertEqual(len(emp.states) , 2)
     self.assertEqual(
       emp.states[emp.initial],
-      dict({'': emp.accepts})
+      dict({'': emp.finals})
     )
 
   def test_a(self):
     a = NFA.build_a('a')
     self.assert_(a.initial)
-    self.assert_(a.accepts)
+    self.assert_(a.finals)
     self.assertEqual(len(a.states) , 2)
     self.assertEqual(
       a.states[a.initial],
-      dict({'a': a.accepts})
+      dict({'a': a.finals})
     )
 
   def test_or(self):
@@ -91,7 +91,7 @@ class TestNFAComposition(unittest.TestCase):
     ab = NFA.build_or(a, b)
 
     self.assert_(ab.initial)
-    self.assert_(ab.accepts)
+    self.assert_(ab.finals)
 
 
   def test_cat(self):
@@ -100,7 +100,7 @@ class TestNFAComposition(unittest.TestCase):
     ab = NFA.build_cat(a, b)
 
     self.assert_(ab.initial)
-    self.assert_(ab.accepts)
+    self.assert_(ab.finals)
 
 
   def test_zom(self):
@@ -108,5 +108,5 @@ class TestNFAComposition(unittest.TestCase):
     azom = NFA.build_zom(a)
   
     self.assert_(azom.initial)
-    self.assert_(azom.accepts)
+    self.assert_(azom.finals)
 

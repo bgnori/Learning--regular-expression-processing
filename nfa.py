@@ -21,10 +21,10 @@ class NFA:
     >>> c = Converter(dg, 0, frozenset((10,)))
   '''
   
-  def __init__(self, dg, initial, accepts):
+  def __init__(self, dg, initial, finals):
     self.states = dg
     self.initial = initial
-    self.accepts = accepts
+    self.finals = finals
     self.Dstates = {}
 
   def eclosure(self, T):
@@ -105,7 +105,7 @@ class NFA:
     S = self.eclosure((self.initial,))
     for a in s:
       S = self.eclosure(self.move(S), a)
-    return S & self.accepts
+    return S & self.finals
 
 
   _node = 0
@@ -138,13 +138,13 @@ class NFA:
     dg.update(a.states)
     dg.update(b.states)
     dg.update({ini: {"":[a.initial, b.initial]}})
-    for s in a.accepts:
+    for s in a.finals:
       assert dg[s] == {}
       # because Thompson alogorith does not produce NFAs have fins with outgoing edges
 
       dg[s] = ['', fin]
 
-    for s in b.accepts:
+    for s in b.finals:
       assert dg[s] == {}
       # because Thompson alogorith does not produce NFAs have fins with outgoing edges
 
@@ -159,12 +159,12 @@ class NFA:
     assert not ( set(a.states) & set(b.states))
 
     ini = a.initial 
-    fin = b.accepts
+    fin = b.finals
     dg.update(a.states)
     dg.update(b.states)
 
     del dg[b.initial]
-    for j in a.accepts:
+    for j in a.finals:
       e = dict()
       e.update(b.states[b.initial])
       dg[j] = e
@@ -180,7 +180,7 @@ class NFA:
 
 
     dg[ini] = {'':[a.initial, fin]}
-    for f in a.accepts:
+    for f in a.finals:
       assert dg[f] == {}
       dg[f] = {'': [a.initial, fin]}
     

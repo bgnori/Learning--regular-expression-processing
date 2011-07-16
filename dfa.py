@@ -35,11 +35,11 @@ class DFA:
 
   '''
 
-  def __init__(self, dg, initial, accepts):
+  def __init__(self, dg, initial, finals):
     self.states = dg
     self.initial = initial
     self.current = initial
-    self.accepts = accepts
+    self.finals = finals
 
   def reset(self):
     self.current = self.initial
@@ -51,7 +51,7 @@ class DFA:
   def feed(self, s):
     for c in s:
       self.handle(c)
-    return self.current in self.accepts
+    return self.current in self.finals
   
 
   

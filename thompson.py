@@ -30,4 +30,3 @@ class Thompson(Emitter):
   def RP(self, t):
     pass
 
-
