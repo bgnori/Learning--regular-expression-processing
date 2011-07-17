@@ -54,3 +54,15 @@ class Thompson(Emitter):
   def RP(self, t):
     pass
 
+
+
+if __name__ == "__main__":
+  from reparser import REParser
+  parser = REParser(Thompson())
+  nfa = parser.parse('(a|b)*abb')
+  print nfa.states
+  print 'abb ==>', nfa.feed('abb')
+  print '--'
+  print 'babb ==>', nfa.feed('babb')
+
+  

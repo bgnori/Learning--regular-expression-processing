@@ -104,8 +104,8 @@ class NFA:
 
     S = self.eclosure((self.initial,))
     for a in s:
-      S = self.eclosure(self.move(S), a)
-    return S & self.finals
+      S = self.eclosure(self.move(S, a))
+    return bool(S & set(self.finals))
 
 
   _node = 0
@@ -150,6 +150,7 @@ class NFA:
 
       dg[s] = {'': [fin]}
 
+    dg[fin] = {}
     return NFA(dg, ini, [fin])
 
 
@@ -168,6 +169,7 @@ class NFA:
       e = dict()
       e.update(b.states[b.initial])
       dg[j] = e
+
     return NFA(dg, ini, fin)
 
 
@@ -180,10 +182,12 @@ class NFA:
 
 
     dg[ini] = {'':[a.initial, fin]}
+    print dg
     for f in a.finals:
       assert dg[f] == {}
       dg[f] = {'': [a.initial, fin]}
     
+    dg[fin] = {}
     return NFA(dg, ini, [fin])
 
 
