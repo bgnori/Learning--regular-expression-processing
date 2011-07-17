@@ -52,3 +52,32 @@ class TestThompson(unittest.TestCase):
   def test_a_zom(self):
     nfa = self.parser.parse('a*')
 
+    self.assert_(set(nfa.states[nfa.initial]['']) & set(nfa.finals))
+
+    for s in nfa.states[nfa.initial]['']:
+      if s not in nfa.finals:
+        break
+    Nsi = s
+
+    xs = nfa.states[Nsi]['a']
+    self.assertEqual(len(xs), 1)
+    Nsf = xs[0]
+      
+    for s in nfa.states[Nsf]['']:
+      self.assert_(s in nfa.finals or Nsi == s)
+    
+      
+
+
+
+
+
+
+
+
+
+
+      
+    
+
+

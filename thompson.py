@@ -44,7 +44,7 @@ class Thompson(Emitter):
 
   def ZOM(self, Ns):
     a = self.pop()
-    ab = NFA.build_zom(a)
+    azom = NFA.build_zom(a)
     self.push(azom)
 
 
