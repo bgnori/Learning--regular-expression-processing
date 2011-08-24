@@ -158,9 +158,12 @@ class REParser:
   def parse(self, s):
     self.feed(s)
     self.next_token()
-    t = self.lookahead
-    if t:
-      self.expr()
+    while True:
+      t = self.lookahead
+      if t:
+        self.expr()
+      else: 
+        break
     return self.emitter.result()
     
 
