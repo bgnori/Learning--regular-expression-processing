@@ -17,6 +17,9 @@ class Thompson(Emitter):
     elif len(self._result) == 0:
       return NFA.build_empty()
     else:
+      print 'got multiple nfas?!'
+      for n in self._result:
+        print n, n.states
       assert False
 
   def push(self, x):
@@ -64,5 +67,6 @@ if __name__ == "__main__":
   print 'abb ==>', nfa.feed('abb')
   print '--'
   print 'babb ==>', nfa.feed('babb')
-
+  print '--'
+  print 'bbabb ==>', nfa.feed('bbabb')
   

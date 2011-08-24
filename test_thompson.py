@@ -67,17 +67,21 @@ class TestThompson(unittest.TestCase):
       self.assert_(s in nfa.finals or Nsi == s)
     
       
+  def test_LP_a_or_b_RP_c(self):
+    nfa = self.parser.parse('(a|b)c')
+    print 'b -> '
+    self.assertFalse(nfa.feed('b'))
+    print 'bc -> '
+    self.assert_(nfa.feed('bc'))
+
+  def test_LP_a_or_b_RP_c_2(self):
+    nfa = self.parser.parse('(a|b)c')
+    print 'a -> '
+    self.assertFalse(nfa.feed('a'))
+    print 'ac -> '
+    self.assert_(nfa.feed('ac'))
 
 
 
-
-
-
-
-
-
-
-      
-    
 
 

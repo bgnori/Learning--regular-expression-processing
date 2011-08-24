@@ -182,7 +182,7 @@ class NFA:
 
 
     dg[ini] = {'':[a.initial, fin]}
-    print dg
+    print 'build_zom:', dg
     for f in a.finals:
       assert dg[f] == {}
       dg[f] = {'': [a.initial, fin]}

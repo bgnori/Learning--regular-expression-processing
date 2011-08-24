@@ -60,12 +60,12 @@ class REParser:
       expr -> choice morechoice
       morechoice -> Or choice morechoice | Empty
     '''
-    print 'expr', self.lookahead
+    print '  trying expr', self.lookahead
     self.choice()
     self.morechoice()
 
   def morechoice(self):
-    print 'morechoice', self.lookahead
+    print '  trying morechoice', self.lookahead
     if self.lookahead.name == 'or':
       self.match_token(self.lookahead)
       self.choice()
@@ -77,23 +77,27 @@ class REParser:
       choice -> seq | morese
       moreseq -> seq moreseq | Empty
     '''
-    print 'choice', self.lookahead
+    print '  trying choice', self.lookahead
     self.seq()
     self.moreseq()
 
   def moreseq(self):
-    print 'moreseq', self.lookahead
+    print '  trying moreseq', self.lookahead
     if self.lookahead:
-      if self.lookahead.name in ('LP', 'Token', 'Escaped'):
+      #if not isinstance(self.lookahead, SingletonToken):
+      if self.lookahead.name not in ('or', 'ZeroOrMore', 'RP'):
         # == term
         self.seq()
+        print 'moreseq:cat', self.emitter._result
         self.emitter.Cat(self.lookahead)
+      else:
+        print '    moreseq:SingletonToken', self.lookahead
     else:
       pass
 
   def seq(self):
     ''' seq -> term ZeroOrMore | term '''
-    print 'seq', self.lookahead
+    print '  trying seq', self.lookahead
     self.term()
     t = self.lookahead
     if t.name == 'ZeroOrMore':
@@ -102,7 +106,7 @@ class REParser:
 
   def term(self):
     ''' term -> ( expr ) | letter '''
-    print 'term', self.lookahead
+    print '  trying term', self.lookahead
     t = self.lookahead
     if t.name == 'LP':
       self.LP()
@@ -114,7 +118,7 @@ class REParser:
       self.error('bad term around %s, name = %s'%(repr(t), t.name))
 
   def letter(self):
-    print 'letter', self.lookahead
+    print '  trying letter', self.lookahead
     t = self.lookahead
     if t.name == 'Token':
       self.alpha()
@@ -134,13 +138,13 @@ class REParser:
     self.match_token(t)
 
   def LP(self):
-    print 'LP'
+    print '  trying LP'
     t = self.lookahead
     self.match_token(t)
     self.emitter.LP(t)
 
   def RP(self):
-    print 'RP'
+    print '  trying RP'
     t = self.lookahead
     self.match_token(t)
     self.emitter.RP(t)
@@ -158,12 +162,11 @@ class REParser:
   def parse(self, s):
     self.feed(s)
     self.next_token()
-    while True:
-      t = self.lookahead
-      if t:
-        self.expr()
-      else: 
-        break
+  
+    t = self.lookahead
+    if t:
+      self.expr()
     return self.emitter.result()
+    
     
 

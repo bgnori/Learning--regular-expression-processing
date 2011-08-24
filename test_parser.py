@@ -28,6 +28,9 @@ class TestParseCase(unittest.TestCase):
   def test_cat_ab(self):
     self.assertEqual(self.parser.parse('ab'), 'ab+')
 
+  def test_cat_abc(self):
+    self.assertEqual(self.parser.parse('abc'), 'ab+c+')
+
   def test_LP_a_RP(self):
     self.assertEqual(self.parser.parse('(a)'), 'a')
 
@@ -58,4 +61,22 @@ class TestParseCase(unittest.TestCase):
   def test_LP_a_or_b_RP_mutli(self):
     self.assertEqual(self.parser.parse('(a|b)*'), 'ab|*')
 
+
+  def test_a_or_b_or_c(self):
+    self.assertEqual(self.parser.parse('a|b|c'), 'ab|c|')
+
+  def test_LP_a_m_RP_m(self):
+    self.assertEqual(self.parser.parse('(a*)*'), 'a**')
+
+  def test_a_mm(self):
+    self.assertEqual(self.parser.parse('a**'), 'a**')
+
+  def test_LP_a_RP_b(self):
+    self.assertEqual(self.parser.parse('(a)b'), 'ab+')
+
+  def test_LP_a_m_RP_b(self):
+    self.assertEqual(self.parser.parse('(a)*b'), 'a*b+')
+
+  def test_LP_a_m_RP_b_b(self):
+    self.assertEqual(self.parser.parse('(a)*bb'), 'a*b+b+')
 
