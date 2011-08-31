@@ -90,6 +90,7 @@ class REParser:
         self.seq()
         print 'moreseq:cat', self.emitter._result
         self.emitter.Cat(self.lookahead)
+        #self.match_token(self.lookahead)
       else:
         print '    moreseq:SingletonToken', self.lookahead
     else:
