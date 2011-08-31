@@ -71,7 +71,14 @@ class TestParseCase(unittest.TestCase):
   def test_LP_a_m_RP_m(self):
     self.assertEqual(self.parser.parse('(a*)*'), 'a**')
 
-  def test_a_mm(self):
+  def xtest_a_mm(self):
+    '''
+      >>> import re
+      >>> r = re.compile('a**')
+      
+      would fail.
+
+    '''
     self.assertEqual(self.parser.parse('a**'), 'a**')
 
   def test_LP_a_RP_b(self):
