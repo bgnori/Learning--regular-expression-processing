@@ -31,7 +31,7 @@ class REParser:
     R -> expr eof | Empty
     expr -> choice morechoice  
     morechoice -> Or choice morechoice | Empty
-    choice -> seq | moreseq
+    choice -> seq moreseq
     moreseq -> seq moreseq | Empty
     seq -> term ZeroOrMore | term
     term -> ( expr ) | letter
@@ -58,13 +58,15 @@ class REParser:
   def expr(self):
     ''' 
       expr -> choice morechoice
-      morechoice -> Or choice morechoice | Empty
     '''
     print '  trying expr', self.lookahead
     self.choice()
     self.morechoice()
 
   def morechoice(self):
+    '''
+      morechoice -> Or choice morechoice | Empty
+    '''
     print '  trying morechoice', self.lookahead
     if self.lookahead.name == 'or':
       self.match_token(self.lookahead)
@@ -74,14 +76,16 @@ class REParser:
 
   def choice(self):
     '''
-      choice -> seq | morese
-      moreseq -> seq moreseq | Empty
+      choice -> seq moreseq
     '''
     print '  trying choice', self.lookahead
     self.seq()
     self.moreseq()
 
   def moreseq(self):
+    '''
+      moreseq -> seq moreseq | Empty
+    '''
     print '  trying moreseq', self.lookahead
     if self.lookahead:
       #if not isinstance(self.lookahead, SingletonToken):
@@ -90,7 +94,7 @@ class REParser:
         self.seq()
         print 'moreseq:cat', self.emitter._result
         self.emitter.Cat(self.lookahead)
-        #self.match_token(self.lookahead)
+        self.moreseq()
       else:
         print '    moreseq:SingletonToken', self.lookahead
     else:
@@ -117,6 +121,7 @@ class REParser:
       self.letter()
     else:
       self.error('bad term around %s, name = %s'%(repr(t), t.name))
+
 
   def letter(self):
     print '  trying letter', self.lookahead

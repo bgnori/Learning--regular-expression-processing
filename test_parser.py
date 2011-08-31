@@ -71,8 +71,7 @@ class TestParseCase(unittest.TestCase):
   def test_LP_a_m_RP_m(self):
     self.assertEqual(self.parser.parse('(a*)*'), 'a**')
 
-  def xtest_a_mm(self):
-    ''' not acceptable '''
+  def test_a_mm(self):
     self.assertEqual(self.parser.parse('a**'), 'a**')
 
   def test_LP_a_RP_b(self):
@@ -87,5 +86,10 @@ class TestParseCase(unittest.TestCase):
   def test_LP_LP_a_m_RP_b_RP_b(self):
     self.assertEqual(self.parser.parse('((a)*b)b'), 'a*b+b+')
 
+  def test_aa_LP_a_or_b_RP(self):
+    self.assertEqual(self.parser.parse('(aa)(a|b)'), 'aa+ab|+')
+
+  def test_aa_LP_a_or_b_RP(self):
+    self.assertEqual(self.parser.parse('aa(a|b)'), 'aa+ab|+')
 
 
